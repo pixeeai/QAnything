@@ -2,7 +2,6 @@ import os
 import json
 import requests
 import time
-import random
 import string
 import hashlib
 import argparse
@@ -10,8 +9,8 @@ import concurrent.futures
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import random
 import threading
+import secrets
 
 lock = threading.Lock()
 
@@ -135,7 +134,7 @@ def perform_load_test(concurrency, total_requests, questions, output_file, is_st
     questions = ["什么是三大专项", "江苏高三物生地，军校能不能报，哪些专业不能报", "山东文科在江苏怎么选学校", "东南大学化学工程与工艺，生物科学，制药工程分流哪个好？", "男生高三物化地，辽宁，学日语好选学校吗"]
     #questions = ["什么是三大专项"] * 5
     with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as executor:
-        future_to_request = {executor.submit(measure_latency, random.choice(questions), output_file, is_stream): i for i in range(total_requests)}
+        future_to_request = {executor.submit(measure_latency, secrets.SystemRandom().choice(questions), output_file, is_stream): i for i in range(total_requests)}
         for future in concurrent.futures.as_completed(future_to_request):
             try:
                 latency = future.result()
