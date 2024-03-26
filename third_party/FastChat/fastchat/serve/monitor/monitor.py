@@ -9,7 +9,6 @@ pip install pytz gradio gdown plotly polyglot pyicu pycld2 tabulate
 import argparse
 import ast
 import json
-import pickle
 import os
 import threading
 import time
@@ -22,6 +21,7 @@ from fastchat.serve.monitor.basic_stats import report_basic_stats, get_log_files
 from fastchat.serve.monitor.clean_battle_data import clean_battle_data
 from fastchat.serve.monitor.elo_analysis import report_elo_analysis_results
 from fastchat.utils import build_logger, get_window_url_params_js
+import fickling
 
 
 notebook_url = (
@@ -264,7 +264,7 @@ def build_leaderboard_tab(elo_results_file, leaderboard_table_file, show_plot=Fa
         p1 = p2 = p3 = p4 = None
     else:
         with open(elo_results_file, "rb") as fin:
-            elo_results = pickle.load(fin)
+            elo_results = fickling.load(fin)
 
         p1 = elo_results["win_fraction_heatmap"]
         p2 = elo_results["battle_count_heatmap"]
