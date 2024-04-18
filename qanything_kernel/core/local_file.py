@@ -15,6 +15,7 @@ from qanything_kernel.utils.splitter import ChineseTextSplitter
 from qanything_kernel.utils.loader import UnstructuredPaddleImageLoader, UnstructuredPaddlePDFLoader
 from qanything_kernel.utils.splitter import zh_title_enhance
 from sanic.request import File
+import pandas as pd
 import os
 
 text_splitter = RecursiveCharacterTextSplitter(
@@ -82,8 +83,15 @@ class LocalFile:
             texts_splitter = ChineseTextSplitter(pdf=False, sentence_size=sentence_size)
             docs = loader.load_and_split(texts_splitter)
         elif self.file_path.lower().endswith(".xlsx"):
-            loader = UnstructuredExcelLoader(self.file_path, mode="elements")
-            docs = loader.load()
+            # loader = UnstructuredExcelLoader(self.file_path, mode="elements")
+            docs = []
+            csv_file_path = self.file_path[:-5] + '.csv'
+            xlsx = pd.read_excel(self.file_path, engine='openpyxl', sheet_name=None)
+            for sheet in xlsx.keys():
+                csv_file_path = self.file_path[:-5] + '_' + sheet + '.csv'
+                xlsx[sheet].to_csv(csv_file_path, index=False)
+                loader = CSVLoader(csv_file_path, csv_args={"delimiter": ",", "quotechar": '"'})
+                docs += loader.load()
         elif self.file_path.lower().endswith(".pptx"):
             loader = UnstructuredPowerPointLoader(self.file_path, mode="elements")
             docs = loader.load()
