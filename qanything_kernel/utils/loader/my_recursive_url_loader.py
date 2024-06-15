@@ -1,10 +1,9 @@
 from typing import Iterator, List, Optional, Set
 from urllib.parse import urljoin, urldefrag
 
-import requests
-
 from langchain.docstore.document import Document
 from langchain.document_loaders.base import BaseLoader
+from security import safe_requests
 
 
 class MyRecursiveUrlLoader(BaseLoader):
@@ -62,7 +61,7 @@ class MyRecursiveUrlLoader(BaseLoader):
         visited.add(url)
 
         # Get all links that are relative to the root of the website
-        response = requests.get(url)
+        response = safe_requests.get(url)
         soup = BeautifulSoup(response.text, "html.parser")
         all_links = [urljoin(url, link.get("href")) for link in soup.find_all("a")]
         # Filter children url of current url
